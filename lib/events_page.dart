@@ -1,65 +1,82 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+
 
 class EventsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Events'),
+        title: Text('Event Cards'),
+        backgroundColor: Color(0xFF41C9E2),
       ),
-      body: ListView(
-        children: [
-          buildCard(
-            title: 'Techblitz!',
-            description: '🚀 Unleash the Future of Coding at Techblitz! 🌟 Join us for an electrifying celebration of creativity, technology, and the limitless potential of AI. From AI-infused web development to groundbreaking data science challenges and visionary UI/UX design, Techblitz is where innovation knows no bounds. Connect with like-minded pioneers, push your coding boundaries, and redefine the future together! 💡',
-            imagePath: 'assets/Events/Techblitz.jpg',
-            onExplorePressed: () async {
-              var url = "https://www.instagram.com/p/C4C2jejLHBA/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==";
-              try {
-                if (await canLaunch(url)) {
-                  await launch(url);
-                } else {
-                  throw 'Could not launch $url';
-                }
-              } catch (e) {
-                print('Error launching URL: $e');
-              }
-            },
-          ),
-          buildCard(
-            title: 'Coherence 1.0!',
-            description: "Who needs a typical date when you can hack into a world of coherence? Join us at the COHERENCE hackathon and let's create something extraordinary together! 💻🌟",
-            imagePath: 'assets/Events/Coherence.jpg',
-            onExplorePressed: () async {
-              var url = "https://www.instagram.com/p/C4qPujjR5ls/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==";
-              try {
-                if (await canLaunch(url)) {
-                  await launch(url);
-                } else {
-                  throw 'Could not launch $url';
-                }
-              } catch (e) {
-                print('Error launching URL: $e');
-              }
-            },
-          ),
-          // Add more cards with different explore button functionalities
-        ],
-      ),
+      body: CardList(),
     );
   }
+}
 
-  Widget buildCard({
-    required String title,
-    required String description,
-    required String imagePath,
-    required VoidCallback onExplorePressed,
-  }) {
+class CardList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('Events').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else {
+          final documents = snapshot.data!.docs;
+          return ListView.builder(
+            itemCount: documents.length,
+            itemBuilder: (context, index) {
+              final eventData = documents[index].data() as Map<String, dynamic>;
+              print('Event Data: $eventData'); // Print the eventData map
+              return EventCard(
+                title: eventData['title'] ?? '',
+                description: eventData['description'] ?? '',
+                imagePath: eventData['img'] ?? '',
+                url: eventData['url'] ?? '',
+              );
+            },
+          );
+        }
+      },
+    );
+  }
+}
+
+
+
+class EventCard extends StatefulWidget {
+  final String title;
+  final String description;
+  final String imagePath;
+  final String url;
+
+  const EventCard({
+    required this.title,
+    required this.description,
+    required this.imagePath,
+    required this.url,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  _EventCardState createState() => _EventCardState();
+}
+
+class _EventCardState extends State<EventCard> {
+  bool isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
     return Center(
       child: Material(
         elevation: 4,
-        color: Colors.grey[200],
+        color: Color(0xFF41C9E2),
         child: Card(
           elevation: 0,
           margin: EdgeInsets.zero,
@@ -70,19 +87,20 @@ class EventsPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Image.asset(
-                imagePath,
-                height: 160,
+              Image.network(
+                widget.imagePath,
+                height: 180,
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
               Container(
                 padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+                color: Color(0xFFACE2E1),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      title,
+                      widget.title,
                       style: TextStyle(
                         fontSize: 24,
                         color: Colors.grey[800],
@@ -90,12 +108,24 @@ class EventsPage extends StatelessWidget {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      description,
+                      isExpanded ? widget.description : widget.description.substring(0, 110) + '...',
                       style: TextStyle(
                         fontSize: 15,
                         color: Colors.grey[700],
                       ),
                     ),
+                    if (widget.description.length > 100)
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isExpanded = !isExpanded;
+                          });
+                        },
+                        child: Text(
+                          isExpanded ? 'Less' : 'More',
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      ),
                     Row(
                       children: <Widget>[
                         Spacer(),
@@ -104,20 +134,16 @@ class EventsPage extends StatelessWidget {
                             foregroundColor: Colors.transparent,
                           ),
                           child: const Text(
-                            "SHARE",
-                            style: TextStyle(color: Colors.blue),
-                          ),
-                          onPressed: () {},
-                        ),
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.transparent,
-                          ),
-                          child: const Text(
                             "EXPLORE",
                             style: TextStyle(color: Colors.blue),
                           ),
-                          onPressed: onExplorePressed,
+                          onPressed: () async {
+                            if (await canLaunch(widget.url)) {
+                              await launch(widget.url);
+                            } else {
+                              print('Could not launch ${widget.url}');
+                            }
+                          },
                         ),
                       ],
                     ),
