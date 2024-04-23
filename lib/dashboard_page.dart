@@ -5,7 +5,7 @@ import 'announcements_page.dart';
 import 'profile_page.dart';
 import 'syllabus_page.dart';
 import 'events_page.dart';
-import 'holiday_page.dart';
+import 'Calendar.dart';
 
 class DashboardPage extends StatelessWidget {
   final String userId; // Add userId parameter to store the user ID
@@ -17,21 +17,38 @@ class DashboardPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Dashboard'),
+        backgroundColor: Color(0xFF41C9E2), // Set app bar color to #FAF1E4
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+      backgroundColor: Color(0xFF41C9E2),
+      // Set window background color to #FAF1E4
+      body: Padding(
+        padding: EdgeInsets.all(20.0),
+        child: ListView(
           children: [
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SubjectAttendancePage(userId: userId)),
+                  MaterialPageRoute(builder: (context) =>
+                      SubjectAttendancePage(userId: userId)),
                 );
               },
-              child: Text('Attendance'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(
+                    0xFFACE2E1), // Set the background color to #CEDEBD
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'Attendance',
+                  style: TextStyle(
+                    color: Colors.white, // Set text color to white
+                    fontSize: 18, // Set text size to 18
+                  ),
+                ),
+              ),
             ),
+            SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -39,8 +56,22 @@ class DashboardPage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => FeesPage()),
                 );
               },
-              child: Text('Fees'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(
+                    0xFFACE2E1), // Set the background color to #CEDEBD
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'Fees',
+                  style: TextStyle(
+                    color: Colors.white, // Set text color to white
+                    fontSize: 18, // Set text size to 18
+                  ),
+                ),
+              ),
             ),
+            SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -48,8 +79,22 @@ class DashboardPage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => AnnouncementsPage()),
                 );
               },
-              child: Text('Announcements'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(
+                    0xFFACE2E1), // Set the background color to #CEDEBD
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'Announcements',
+                  style: TextStyle(
+                    color: Colors.white, // Set text color to white
+                    fontSize: 18, // Set text size to 18
+                  ),
+                ),
+              ),
             ),
+            SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -57,8 +102,22 @@ class DashboardPage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => ProfilePage()),
                 );
               },
-              child: Text('Profile'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(
+                    0xFFACE2E1), // Set the background color to #CEDEBD
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'Profile',
+                  style: TextStyle(
+                    color: Colors.white, // Set text color to white
+                    fontSize: 18, // Set text size to 18
+                  ),
+                ),
+              ),
             ),
+            SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -66,8 +125,22 @@ class DashboardPage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => SyllabusPage()),
                 );
               },
-              child: Text('Syllabus'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(
+                    0xFFACE2E1), // Set the background color to #CEDEBD
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'Syllabus',
+                  style: TextStyle(
+                    color: Colors.white, // Set text color to white
+                    fontSize: 18, // Set text size to 18
+                  ),
+                ),
+              ),
             ),
+            SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -75,17 +148,45 @@ class DashboardPage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => EventsPage()),
                 );
               },
-              child: Text('Events'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(
+                    0xFFACE2E1), // Set the background color to #CEDEBD
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'Events',
+                  style: TextStyle(
+                    color: Colors.white, // Set text color to white
+                    fontSize: 18, // Set text size to 18
+                  ),
+                ),
+              ),
             ),
+            SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HolidayPage()),
+                  MaterialPageRoute(builder: (context) => Calendar()),
                 );
               },
-              child: Text('Holiday'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(
+                    0xFFACE2E1), // Set the background color to #CEDEBD
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'Calendar',
+                  style: TextStyle(
+                    color: Colors.white, // Set text color to white
+                    fontSize: 18, // Set text size to 18
+                  ),
+                ),
+              ),
             ),
+
           ],
         ),
       ),
