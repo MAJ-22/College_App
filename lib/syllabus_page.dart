@@ -12,8 +12,10 @@ class SyllabusPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Syllabus'),
+          title: Text('Syllabus'),
+          backgroundColor: Color(0xFF41C9E2)
       ),
+      backgroundColor: Color(0xFF41C9E2),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -45,6 +47,7 @@ class SyllabusPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => CSE()),
                   );
                 },
+
               ),
               DepartmentCard(
                 departmentName: 'IT',
@@ -102,22 +105,37 @@ class DepartmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 200,
-      height: 100,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        child: Text(
-          departmentName,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+    return Column(
+      children: [
+        SizedBox(
+          width: 350,
+          height: 70,
+          child: ElevatedButton(
+            onPressed: onPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFFACE2E1), // Set the background color to #ACE2E1
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0), // Adjust padding as needed
+              child: Text(
+                departmentName,
+                style: TextStyle(
+                  color: Colors.white, // Set text color to white
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
         ),
-      ),
+        SizedBox(height: 15,)
+      ],
     );
+
+
   }
 }
+
 
 class Comps extends StatelessWidget {
   @override
