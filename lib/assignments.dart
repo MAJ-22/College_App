@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_database/firebase_database.dart'; // Import Firebase Realtime Database package
 import 'package:file_picker/file_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(Facultyas());
@@ -273,9 +275,21 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
 
     UploadTask uploadTask = storageReference.putFile(_file!);
 
-    await uploadTask.whenComplete(() => setState(() {
-      _uploadStatus = 'File uploaded successfully!';
-    }));
+    await uploadTask.whenComplete(() {
+      setState(() {
+        _uploadStatus = 'File uploaded successfully!';
+
+        // Push assignment details to Firebase Realtime Database
+        FirebaseFirestore.instance.collection('Assignment').add({
+          'title': widget.assignmentName,
+          'year': widget.selectedYear,
+          'department': widget.selectedDepartment,
+          'due date': widget.dueDate,
+          'subject': widget.selectedSubject,
+          'path': 'Assignments/${widget.selectedYear}/${widget.selectedDepartment}/${widget.selectedSubject}/$fileName'
+        });
+      });
+    });
   }
 
   @override
