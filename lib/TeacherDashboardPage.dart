@@ -1,3 +1,5 @@
+import 'package:college_app/event_input.dart';
+import 'package:college_app/faculty_event.dart';
 import 'package:flutter/material.dart';
 
 class TeacherDashboardPage extends StatelessWidget {
@@ -7,21 +9,89 @@ class TeacherDashboardPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Teacher Dashboard'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: Padding(
+        padding: EdgeInsets.all(20.0),
+        child: ListView(
           children: [
-            Text(
-              'Welcome, Teacher!',
-              style: TextStyle(fontSize: 24),
-            ),
-            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Add functionality to navigate to specific teacher features
+
               },
-              child: Text('View Teacher Features'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFACE2E1), // Set the background color to #CEDEBD
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'Attendance',
+                  style: TextStyle(
+                    color: Colors.white, // Set text color to white
+                    fontSize: 18, // Set text size to 18
+                  ),
+                ),
+              ),
             ),
+            SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: () {
+
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFACE2E1), // Set the background color to #CEDEBD
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'Announcements',
+                  style: TextStyle(
+                    color: Colors.white, // Set text color to white
+                    fontSize: 18, // Set text size to 18
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: () {
+
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFACE2E1), // Set the background color to #CEDEBD
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'Profile',
+                  style: TextStyle(
+                    color: Colors.white, // Set text color to white
+                    fontSize: 18, // Set text size to 18
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EventInput()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFACE2E1), // Set the background color to #CEDEBD
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'Events',
+                  style: TextStyle(
+                    color: Colors.white, // Set text color to white
+                    fontSize: 18, // Set text size to 18
+                  ),
+                ),
+              ),
+            ),
+
           ],
         ),
       ),
