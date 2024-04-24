@@ -19,7 +19,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   String _selectedYear = 'NA'; // Default year is 'NA'
   String _errorMessage = '';
 
-  Future<List<String>> getSubjectsForBranchAndYear(String branch, String year) async {
+  Future<Map<String, List<String>>> getSubjectsForBranchAndYear(String branch, String year) async {
     final subjectsSnapshot = await _firestore
         .collection('Subjects')
         .doc('$branch-$year')
@@ -27,31 +27,27 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
     if (subjectsSnapshot.exists) {
       final subjectsData = subjectsSnapshot.data();
-      List<String> subjects = [];
+      Map<String, List<String>> semesterSubjects = {};
 
       // Add semester subjects based on the year
       if (year == '1') {
-        final semester1Subjects = List<String>.from(subjectsData?['semester1'] ?? []);
-        final semester2Subjects = List<String>.from(subjectsData?['semester2'] ?? []);
-        subjects.addAll([...semester1Subjects, ...semester2Subjects]);
+        semesterSubjects['semester1'] = List<String>.from(subjectsData?['semester1'] ?? []);
+        semesterSubjects['semester2'] = List<String>.from(subjectsData?['semester2'] ?? []);
       } else if (year == '2') {
-        final semester3Subjects = List<String>.from(subjectsData?['semester3'] ?? []);
-        final semester4Subjects = List<String>.from(subjectsData?['semester4'] ?? []);
-        subjects.addAll([...semester3Subjects, ...semester4Subjects]);
+        semesterSubjects['semester3'] = List<String>.from(subjectsData?['semester3'] ?? []);
+        semesterSubjects['semester4'] = List<String>.from(subjectsData?['semester4'] ?? []);
       } else if (year == '3') {
-        final semester5Subjects = List<String>.from(subjectsData?['semester5'] ?? []);
-        final semester6Subjects = List<String>.from(subjectsData?['semester6'] ?? []);
-        subjects.addAll([...semester5Subjects, ...semester6Subjects]);
+        semesterSubjects['semester5'] = List<String>.from(subjectsData?['semester5'] ?? []);
+        semesterSubjects['semester6'] = List<String>.from(subjectsData?['semester6'] ?? []);
       } else if (year == '4') {
-        final semester7Subjects = List<String>.from(subjectsData?['semester7'] ?? []);
-        final semester8Subjects = List<String>.from(subjectsData?['semester8'] ?? []);
-        subjects.addAll([...semester7Subjects, ...semester8Subjects]);
+        semesterSubjects['semester7'] = List<String>.from(subjectsData?['semester7'] ?? []);
+        semesterSubjects['semester8'] = List<String>.from(subjectsData?['semester8'] ?? []);
       }
 
-      return subjects;
+      return semesterSubjects;
     }
 
-    return [];
+    return {};
   }
 
   @override
@@ -205,15 +201,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         print('User registered: ${userCredential.user}');
 
                         // Get subjects for the selected branch and year
-                        final subjects = await getSubjectsForBranchAndYear(
+                        final semesterSubjects = await getSubjectsForBranchAndYear(
                             _selectedBranch, _selectedYear);
 
-                        // Create attendance record with the retrieved subjects
+                        // Create attendance record with the semester subjects
                         if (_selectedRole == 'student') {
                           final Map<String, dynamic> attendanceData = {};
-                          for (var subject in subjects) {
-                            attendanceData[subject.toString()] = {'attended': 0, 'totalLectures': 5}; // Convert the subject key to a string
-                          }
+                          semesterSubjects.forEach((semester, subjects) {
+                            attendanceData[semester] = {};
+                            for (var subject in subjects) {
+                              attendanceData[semester][subject.toString()] = {'attended': 0, 'totalLectures': 5};
+                            }
+                          });
                           await _firestore
                               .collection('Attendance')
                               .doc(userCredential.user!.uid)
