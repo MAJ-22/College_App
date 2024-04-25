@@ -5,30 +5,151 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_database/firebase_database.dart'; // Import Firebase Realtime Database package
 import 'package:file_picker/file_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-void main() {
-  runApp(Facultyas());
+
+class Assign extends StatefulWidget {
+  @override
+  _AssignState createState() => _AssignState();
 }
 
-class Facultyas extends StatelessWidget {
+class _AssignState extends State<Assign> {
+  String? userId;
+  List<DocumentSnapshot> assignments = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserId();
+  }
+
+
+  void fetchUserId() {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user != null) {
+        setState(() {
+          userId = user.uid;
+          // Fetch user profile and assignments after userId is set
+          fetchUserProfile(userId!);
+        });
+      } else {
+        print('User is not signed in');
+      }
+    });
+  }
+
+  void fetchAssignments(String branch) {
+    FirebaseFirestore.instance
+        .collection('Assignment')
+        .where('department', isEqualTo: branch)
+        .where('user_id', isEqualTo: userId)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      setState(() {
+        assignments = querySnapshot.docs;
+      });
+    }).catchError((error) {
+      print('Error fetching assignments: $error');
+    });
+  }
+
+  Future<void> fetchUserProfile(String userId) async {
+    try {
+      DocumentSnapshot userProfile =
+      await FirebaseFirestore.instance.collection('Profile').doc(userId).get();
+
+      if (userProfile.exists) {
+        Map<String, dynamic>? userData = userProfile.data() as Map<String, dynamic>?;
+
+        if (userData != null) {
+          String? branch = userData['branch']; // Change String to String?// Change String to String?
+
+          if (branch != null ) {
+            // Fetch assignments based on branch and user ID
+            fetchAssignments(branch);
+          } else {
+            print('Branch or user ID is null.');
+          }
+        } else {
+          print('User data is null.');
+        }
+      } else {
+        print('User profile does not exist.');
+      }
+    } catch (e) {
+      print('Error fetching user profile: $e');
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Assignments'),
-        ),
-        body: Center(
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MyForm()),
-              );
-            },
-            child: Text('Create'),
-          ),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Assignments'),
+      ),
+      body: assignments.isNotEmpty
+          ? ListView.builder(
+        itemCount: assignments.length,
+        itemBuilder: (context, index) {
+          // Convert Firestore timestamp to DateTime
+          DateTime dueDateTime = (assignments[index]['due date'] as Timestamp).toDate();
+          // Format the DateTime as needed (e.g., 'MM/dd/yyyy')
+          String formattedDueDate = DateFormat('MM/dd/yyyy').format(dueDateTime);
+
+          return Card(
+            child: ListTile(
+              title: Text('Title: ${assignments[index]['title']}'),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Subject: ${assignments[index]['subject']}'),
+                  Text('Due Date: $formattedDueDate'),
+                ],
+              ),
+              trailing: IconButton(
+                icon: Icon(Icons.download),
+                onPressed: () async {
+                  // Download the file
+                  final storage = FirebaseStorage.instance;
+                  var pathReference = storage.ref('${assignments[index]['path']}');
+                  try {
+                    final url = await pathReference.getDownloadURL();
+                    if (await canLaunch(url)) {
+                      await launch(
+                        url,
+                        forceSafariVC: true, // Open in Safari View Controller
+                        forceWebView: false,
+                      );
+                    } else {
+                      throw 'Could not launch $url';
+                    }
+                  } catch (e) {
+                    print('Error downloading file: $e');
+                    // Handle error (e.g., show a snackbar)
+                  }
+                },
+              ),
+            ),
+          );
+        },
+      )
+          : Center(
+        child: Text('No assignments found.'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MyForm()),
+          );
+
+          print('Add button pressed');
+        },
+        child: Icon(Icons.add),
       ),
     );
   }
@@ -48,7 +169,7 @@ class _MyFormState extends State<MyForm> {
 
   Map<String, List<String>> subjects = {
     'AI&DS': ['DBMS', 'AOA'], // Subjects for AI&DS department
-    'COMPS': ['DSA', 'OS'],   // Subjects for COMPS department
+    'Computer': ['DSA', 'OS'],   // Subjects for COMPS department
   };
 
   List<String> years = ['1', '2', '3', '4'];
@@ -265,10 +386,17 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
       return;
     }
 
-    // Get the file name from the selected file path
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      setState(() {
+        _uploadStatus = 'User not authenticated.';
+      });
+      return;
+    }
+    String userId = currentUser.uid;
+
     String fileName = _file!.path.split('/').last;
 
-    // Construct the full path with the file name
     String fullPath = 'Assignments/${widget.selectedYear}/${widget.selectedDepartment}/${widget.selectedSubject}/$fileName';
 
     Reference storageReference = FirebaseStorage.instance.ref().child(fullPath);
@@ -279,14 +407,15 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
       setState(() {
         _uploadStatus = 'File uploaded successfully!';
 
-        // Push assignment details to Firebase Realtime Database
+
         FirebaseFirestore.instance.collection('Assignment').add({
           'title': widget.assignmentName,
           'year': widget.selectedYear,
           'department': widget.selectedDepartment,
           'due date': widget.dueDate,
           'subject': widget.selectedSubject,
-          'path': 'Assignments/${widget.selectedYear}/${widget.selectedDepartment}/${widget.selectedSubject}/$fileName'
+          'path': fullPath,
+          'user_id': userId, // Include the current user's ID
         });
       });
     });

@@ -104,7 +104,7 @@ class TeacherDashboardPage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Facultyas()), // Use Main1 instead of main1
+                  MaterialPageRoute(builder: (context) => Assign()), // Use Main1 instead of main1
                 );
               },
               style: ElevatedButton.styleFrom(
