@@ -2,6 +2,7 @@ import 'package:college_app/assignments.dart';
 import 'package:college_app/event_input.dart';
 import 'package:college_app/faculty_event.dart';
 import 'package:flutter/material.dart';
+import 'TeacherAttendancePage.dart';
 
 class TeacherDashboardPage extends StatelessWidget {
   @override
@@ -16,7 +17,13 @@ class TeacherDashboardPage extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TeacherAttendancePage(
+                    userId: 'teacherId', // Pass the teacher's ID
+                    userBranch: 'teacherBranch', // Pass the teacher's branch
+                  )),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFFACE2E1), // Set the background color to #CEDEBD
