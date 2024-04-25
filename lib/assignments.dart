@@ -51,8 +51,8 @@ class _MyFormState extends State<MyForm> {
     'COMPS': ['DSA', 'OS'],   // Subjects for COMPS department
   };
 
-  List<String> years = ['FE', 'SE', 'TE', 'BE'];
-  List<String> departments = ['AI&DS', 'COMPS'];
+  List<String> years = ['1', '2', '3', '4'];
+  List<String> departments = ['Computer', 'AI&DS', 'IT'];
 
   @override
   Widget build(BuildContext context) {

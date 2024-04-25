@@ -1,3 +1,4 @@
+import 'package:college_app/assignments-students.dart';
 import 'package:flutter/material.dart';
 import 'subject_attendance_page.dart';
 import 'fees_page.dart';
@@ -48,29 +49,7 @@ class DashboardPage extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => FeesPage()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(
-                    0xFFACE2E1), // Set the background color to #CEDEBD
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Text(
-                  'Fees',
-                  style: TextStyle(
-                    color: Colors.white, // Set text color to white
-                    fontSize: 18, // Set text size to 18
-                  ),
-                ),
-              ),
-            ),
+
             SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
@@ -179,6 +158,52 @@ class DashboardPage extends StatelessWidget {
                 padding: const EdgeInsets.all(20.0),
                 child: Text(
                   'Calendar',
+                  style: TextStyle(
+                    color: Colors.white, // Set text color to white
+                    fontSize: 18, // Set text size to 18
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Assign()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(
+                    0xFFACE2E1), // Set the background color to #CEDEBD
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'Assignments',
+                  style: TextStyle(
+                    color: Colors.white, // Set text color to white
+                    fontSize: 18, // Set text size to 18
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FeesPage()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(
+                    0xFFACE2E1), // Set the background color to #CEDEBD
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'Fees',
                   style: TextStyle(
                     color: Colors.white, // Set text color to white
                     fontSize: 18, // Set text size to 18
