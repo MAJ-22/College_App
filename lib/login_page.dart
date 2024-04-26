@@ -1,3 +1,4 @@
+import 'package:college_app/guest_dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -129,6 +130,10 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(height: 10.0),
                   ElevatedButton( // Guest Button
                     onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => guestdashboard()),
+                      );
                       // Handle guest login or navigation
                     },
                     child: Text('Continue as Guest'),
