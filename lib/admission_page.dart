@@ -115,7 +115,7 @@ class cai extends StatelessWidget {
       appBar: AppBar(
         title: Text('Courses and Intake'),
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             //Image(image: AssetImage('assets/tablets.png'),),
