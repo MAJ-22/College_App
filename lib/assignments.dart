@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Assign extends StatefulWidget {
   @override
@@ -165,13 +165,52 @@ class _MyFormState extends State<MyForm> {
   String? assignmentName;
   DateTime? dueDate;
 
-  Map<String, List<String>> subjects = {
-    'AI&DS': ['DBMS', 'AOA'], // Subjects for AI&DS department
-    'Computer': ['DSA', 'OS'],   // Subjects for COMPS department
-  };
+  final _firestore = FirebaseFirestore.instance; // Initialize the FirebaseFirestore instance
+
+  Future<Map<String, List<String>>> getSubjectsForBranchAndYear(String branch, String year) async {
+    final subjectsSnapshot = await _firestore.collection('Subjects').doc('$branch-$year').get();
+
+    if (subjectsSnapshot.exists) {
+      final subjectsData = subjectsSnapshot.data();
+      Map<String, List<String>> semesterSubjects = {};
+
+      // Add semester subjects based on the year
+      if (year == '1') {
+        semesterSubjects['semester1'] = List<String>.from(subjectsData?['semester1'] ?? []);
+        semesterSubjects['semester2'] = List<String>.from(subjectsData?['semester2'] ?? []);
+      } else if (year == '2') {
+        semesterSubjects['semester3'] = List<String>.from(subjectsData?['semester3'] ?? []);
+        semesterSubjects['semester4'] = List<String>.from(subjectsData?['semester4'] ?? []);
+      } else if (year == '3') {
+        semesterSubjects['semester5'] = List<String>.from(subjectsData?['semester5'] ?? []);
+        semesterSubjects['semester6'] = List<String>.from(subjectsData?['semester6'] ?? []);
+      } else if (year == '4') {
+        semesterSubjects['semester7'] = List<String>.from(subjectsData?['semester7'] ?? []);
+        semesterSubjects['semester8'] = List<String>.from(subjectsData?['semester8'] ?? []);
+      }
+
+      return semesterSubjects;
+    }
+
+    return {};
+  }
 
   List<String> years = ['1', '2', '3', '4'];
-  List<String> departments = ['Computer', 'AI&DS', 'IT'];
+  List<String> departments = ['Computer-1', 'AI&DS', 'IT'];
+  Map<String, List<String>> semesterSubjects = {};
+
+  @override
+  void initState() {
+    super.initState();
+    fetchSubjects();
+  }
+
+  Future<void> fetchSubjects() async {
+    if (selectedYear != null && selectedDepartment != null) {
+      semesterSubjects = await getSubjectsForBranchAndYear(selectedDepartment!, selectedYear!);
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -194,6 +233,7 @@ class _MyFormState extends State<MyForm> {
                 onChanged: (String? value) {
                   setState(() {
                     selectedYear = value;
+                    fetchSubjects();
                   });
                 },
                 items: years.map<DropdownMenuItem<String>>((String value) {
@@ -214,6 +254,7 @@ class _MyFormState extends State<MyForm> {
                   setState(() {
                     selectedDepartment = value;
                     selectedSubject = null; // Reset selected subject when department changes
+                    fetchSubjects();
                   });
                 },
                 items: departments.map<DropdownMenuItem<String>>((String value) {
@@ -223,7 +264,7 @@ class _MyFormState extends State<MyForm> {
                   );
                 }).toList(),
               ),
-              if (selectedDepartment != null)
+              if (selectedDepartment != null && semesterSubjects.isNotEmpty)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -239,12 +280,10 @@ class _MyFormState extends State<MyForm> {
                           selectedSubject = value;
                         });
                       },
-                      items: subjects[selectedDepartment]!.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                      items: semesterSubjects.entries
+                          .expand((entry) => entry.value.map((subject) =>
+                          DropdownMenuItem<String>(value: subject, child: Text(subject))))
+                          .toList(),
                     ),
                   ],
                 ),
