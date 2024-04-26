@@ -125,7 +125,7 @@ class _StudentListPageState extends State<StudentListPage> {
     try {
       final studentsSnapshot = await FirebaseFirestore.instance
           .collection('Profile')
-          .where('branch', isEqualTo: widget.teacherBranch)
+          .where('branch', isEqualTo: 'Computer')
           .where('year', isEqualTo: widget.year)
           .where('role', isEqualTo: 'student')
           .get();
