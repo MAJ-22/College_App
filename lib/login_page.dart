@@ -127,6 +127,13 @@ class _LoginPageState extends State<LoginPage> {
                     child: Text('Login'),
                   ),
                   SizedBox(height: 10.0),
+                  ElevatedButton( // Guest Button
+                    onPressed: () {
+                      // Handle guest login or navigation
+                    },
+                    child: Text('Continue as Guest'),
+                  ),
+                  SizedBox(height: 10.0),
                   TextButton(
                     onPressed: () {
                       Navigator.push(
